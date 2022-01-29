@@ -15,7 +15,10 @@ async function signIn(name) {
     return false;
   }
 
-  await participantsCollection.insertOne({ name: lowerCaseName });
+  await participantsCollection.insertOne({
+    name: lowerCaseName,
+    lastStatus: Date.now(),
+  });
 
   await messagesService.save({ from: lowerCaseName, text: "entra na sala..." });
 
