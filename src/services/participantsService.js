@@ -1,4 +1,5 @@
 import * as db from "../database.js";
+import * as messagesService from "./messagesService.js";
 
 async function signIn(name) {
   const lowerCaseName = name.toLowerCase();
@@ -15,6 +16,7 @@ async function signIn(name) {
   }
 
   await participantsCollection.insertOne({ name: lowerCaseName });
+  await messagesService.save(lowerCaseName, "entra na sala...");
   await db.closeConnection();
 
   return true;
