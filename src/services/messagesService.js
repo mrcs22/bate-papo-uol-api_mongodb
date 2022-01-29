@@ -1,8 +1,14 @@
 import dayjs from "dayjs";
 import * as db from "../database.js";
 
-async function save(from, text, type, to) {
+async function saveNew({ from, text, type, to }) {
   const timestamp = dayjs().format("HH:mm:ss");
+
+  const participantsCollection = await db.getCollection("participants");
+  const participant = await participantsCollection.findOne({ name: to });
+  if (!participant) {
+    return false;
+  }
 
   const messagesCollection = await db.getCollection("messages");
 
@@ -16,6 +22,7 @@ async function save(from, text, type, to) {
 
   await messagesCollection.insertOne(message);
   await db.closeConnection();
+  return true;
 }
 
-export { save };
+export { saveNew };

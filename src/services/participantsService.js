@@ -16,7 +16,9 @@ async function signIn(name) {
   }
 
   await participantsCollection.insertOne({ name: lowerCaseName });
-  await messagesService.save(lowerCaseName, "entra na sala...");
+
+  await messagesService.save({ from: lowerCaseName, text: "entra na sala..." });
+
   await db.closeConnection();
 
   return true;
