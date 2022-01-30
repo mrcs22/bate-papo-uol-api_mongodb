@@ -20,11 +20,26 @@ async function signIn(name) {
     lastStatus: Date.now(),
   });
 
-  await messagesService.save({ from: lowerCaseName, text: "entra na sala..." });
+  await messagesService.saveNew({
+    from: lowerCaseName,
+    text: "entra na sala...",
+  });
 
   await db.closeConnection();
 
   return true;
 }
 
-export { signIn };
+async function getAll() {
+  const participantsCollection = await db.getCollection("participants");
+
+  const participants = await participantsCollection
+    .find({})
+    .project({ lastStatus: 0 })
+    .toArray();
+
+  await db.closeConnection();
+  return participants;
+}
+
+export { signIn, getAll };

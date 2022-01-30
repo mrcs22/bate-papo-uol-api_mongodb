@@ -21,7 +21,18 @@ async function signIn(req, res) {
     res.sendStatus(201);
   } catch (e) {
     console.log(e);
+    res.sendStatus(500);
   }
 }
 
-export { signIn };
+async function getAll(req, res) {
+  try {
+    const participants = await participantsService.getAll();
+    res.send(participants);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+}
+
+export { signIn, getAll };
