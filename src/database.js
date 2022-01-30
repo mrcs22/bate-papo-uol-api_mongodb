@@ -12,4 +12,8 @@ async function closeConnection() {
   await mongoClient.close();
 }
 
-export { closeConnection, getCollection };
+async function openConnection() {
+  await mongoClient.connect();
+}
+
+export { openConnection, closeConnection, getCollection };
