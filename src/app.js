@@ -11,6 +11,8 @@ app.use(cors());
 
 app.post("/participants", participantsController.signIn);
 app.get("/participants", participantsController.getAll);
+
 app.post("/messages", messagesController.saveNew);
+app.get("/messages", messagesController.get);
 
 export default app;

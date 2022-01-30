@@ -25,4 +25,26 @@ async function saveNew({ from, text, type, to }) {
   return true;
 }
 
-export { saveNew };
+async function get(userName, limit) {
+  const messagesCollection = await db.getCollection("messages");
+
+  const queryConditions = [
+    { from: userName },
+    { to: userName },
+    { to: "Todos" },
+    { type: "message" },
+  ];
+
+  const messages = await messagesCollection
+    .find({
+      $or: queryConditions,
+    })
+    .limit(limit || 0)
+    .sort({ _id: -1 })
+    .toArray();
+
+  await db.closeConnection();
+  return messages;
+}
+
+export { saveNew, get };
