@@ -4,6 +4,7 @@ import cors from "cors";
 
 import * as participantsController from "./controllers/participantsController.js";
 import * as messagesController from "./controllers/messagesController.js";
+import * as participantsService from "./services/participantsService.js";
 
 const app = express();
 app.use(json());
@@ -15,5 +16,7 @@ app.post("/status", participantsController.updateStatus);
 
 app.post("/messages", messagesController.saveNew);
 app.get("/messages", messagesController.get);
+
+setInterval(participantsService.removeOfflineOnes, 15000);
 
 export default app;

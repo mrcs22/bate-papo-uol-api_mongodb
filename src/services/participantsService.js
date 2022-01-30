@@ -60,4 +60,27 @@ async function updateStatus(name) {
   return true;
 }
 
-export { signIn, getAll, updateStatus };
+async function removeOfflineOnes() {
+  try {
+    const participantsCollection = await db.getCollection("participants");
+
+    const lowestAllowedStatusTime = Date.now() - 10000;
+
+    const offlineUsers = await participantsCollection
+      .find({ lastStatus: { $lt: lowestAllowedStatusTime } })
+      .toArray();
+
+    for (const { name } of offlineUsers) {
+      await participantsCollection.deleteOne({ name });
+
+      await messagesService.saveNew({
+        from: name,
+        text: "sai da sala...",
+      });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export { signIn, getAll, updateStatus, removeOfflineOnes };
