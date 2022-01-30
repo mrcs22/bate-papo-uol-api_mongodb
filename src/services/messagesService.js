@@ -1,12 +1,15 @@
 import dayjs from "dayjs";
 import * as db from "../database.js";
 
-async function saveNew({ from, text, type, to }) {
+async function saveNew({ from, text, type = "status", to = "Todos" }) {
   const timestamp = dayjs().format("HH:mm:ss");
 
   const participantsCollection = await db.getCollection("participants");
   const participant = await participantsCollection.findOne({ name: to });
-  if (!participant) {
+
+  const isItNotStatusMessage = type !== "status";
+
+  if (isItNotStatusMessage && !participant) {
     return false;
   }
 
@@ -15,8 +18,8 @@ async function saveNew({ from, text, type, to }) {
   const message = {
     text,
     from,
-    type: type || "status",
-    to: to || "Todos",
+    type: type,
+    to: to,
     time: timestamp,
   };
 
@@ -24,7 +27,6 @@ async function saveNew({ from, text, type, to }) {
   await db.closeConnection();
   return true;
 }
-
 async function get(userName, limit) {
   const messagesCollection = await db.getCollection("messages");
 
