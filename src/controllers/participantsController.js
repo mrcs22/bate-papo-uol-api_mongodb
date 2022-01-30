@@ -35,4 +35,26 @@ async function getAll(req, res) {
   }
 }
 
-export { signIn, getAll };
+async function updateStatus(req, res) {
+  const name = sanitizeString(req.headers.user);
+  const isInvalidName = name === "";
+
+  if (isInvalidName) {
+    return res.sendStatus(400);
+  }
+
+  try {
+    const statusUpdateSuccess = await participantsService.updateStatus(name);
+
+    if (!statusUpdateSuccess) {
+      return res.sendStatus(404);
+    }
+
+    res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+}
+
+export { signIn, getAll, updateStatus };

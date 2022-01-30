@@ -42,4 +42,22 @@ async function getAll() {
   return participants;
 }
 
-export { signIn, getAll };
+async function updateStatus(name) {
+  const participantsCollection = await db.getCollection("participants");
+
+  const participant = await participantsCollection.findOne({ name });
+
+  if (!participant) {
+    return false;
+  }
+
+  await participantsCollection.updateOne(
+    { name },
+    { $set: { lastStatus: Date.now() } }
+  );
+
+  await db.closeConnection();
+  return true;
+}
+
+export { signIn, getAll, updateStatus };
