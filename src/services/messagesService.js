@@ -1,10 +1,12 @@
 import dayjs from "dayjs";
-import * as db from "../database.js";
+import getDbAgent from "../database.js";
 
 async function saveNew({ from, text, type = "status", to = "Todos" }) {
   const timestamp = dayjs().format("HH:mm:ss");
 
-  const participantsCollection = await db.getCollection("participants");
+  const participantsCollection = await getDbAgent().getCollection(
+    "participants"
+  );
   const participant = await participantsCollection.findOne({ name: to });
 
   const isItNotStatusMessage = type !== "status";
@@ -13,7 +15,7 @@ async function saveNew({ from, text, type = "status", to = "Todos" }) {
     return false;
   }
 
-  const messagesCollection = await db.getCollection("messages");
+  const messagesCollection = await getDbAgent().getCollection("messages");
 
   const message = {
     text,
@@ -24,11 +26,11 @@ async function saveNew({ from, text, type = "status", to = "Todos" }) {
   };
 
   await messagesCollection.insertOne(message);
-  await db.closeConnection();
+  await getDbAgent().closeConnection();
   return true;
 }
 async function get(userName, limit) {
-  const messagesCollection = await db.getCollection("messages");
+  const messagesCollection = await getDbAgent().getCollection("messages");
 
   const queryConditions = [
     { from: userName },
@@ -45,7 +47,7 @@ async function get(userName, limit) {
     .sort({ _id: -1 })
     .toArray();
 
-  await db.closeConnection();
+  await getDbAgent().closeConnection();
   return messages;
 }
 

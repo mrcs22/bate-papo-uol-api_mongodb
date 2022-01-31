@@ -1,17 +1,19 @@
-import * as db from "../database.js";
+import getDbAgent from "../database.js";
 import * as messagesService from "./messagesService.js";
 
 async function signIn(name) {
   const lowerCaseName = name.toLowerCase();
 
-  const participantsCollection = await db.getCollection("participants");
+  const participantsCollection = await getDbAgent().getCollection(
+    "participants"
+  );
 
   const participant = await participantsCollection.findOne({
     name: lowerCaseName,
   });
 
   if (!!participant) {
-    await db.closeConnection();
+    await getDbAgent().closeConnection();
     return false;
   }
 
@@ -25,25 +27,29 @@ async function signIn(name) {
     text: "entra na sala...",
   });
 
-  await db.closeConnection();
+  await getDbAgent().closeConnection();
 
   return true;
 }
 
 async function getAll() {
-  const participantsCollection = await db.getCollection("participants");
+  const participantsCollection = await getDbAgent().getCollection(
+    "participants"
+  );
 
   const participants = await participantsCollection
     .find({})
     .project({ lastStatus: 0 })
     .toArray();
 
-  await db.closeConnection();
+  await getDbAgent().closeConnection();
   return participants;
 }
 
 async function updateStatus(name) {
-  const participantsCollection = await db.getCollection("participants");
+  const participantsCollection = await getDbAgent().getCollection(
+    "participants"
+  );
 
   const participant = await participantsCollection.findOne({ name });
 
@@ -56,13 +62,15 @@ async function updateStatus(name) {
     { $set: { lastStatus: Date.now() } }
   );
 
-  await db.closeConnection();
+  await getDbAgent().closeConnection();
   return true;
 }
 
 async function removeOfflineOnes() {
   try {
-    const participantsCollection = await db.getCollection("participants");
+    const participantsCollection = await getDbAgent().getCollection(
+      "participants"
+    );
 
     const lowestAllowedStatusTime = Date.now() - 10000;
 
@@ -71,7 +79,7 @@ async function removeOfflineOnes() {
       .toArray();
 
     for (const { name } of offlineUsers) {
-      await db.openConnection();
+      await getDbAgent().openConnection();
 
       await participantsCollection.deleteOne({ name });
 
@@ -80,7 +88,7 @@ async function removeOfflineOnes() {
         text: "sai da sala...",
       });
 
-      db.closeConnection();
+      getDbAgent().closeConnection();
     }
   } catch (e) {
     console.log(e);
