@@ -9,9 +9,9 @@ async function saveNew({ from, text, type = "status", to = "Todos" }) {
   );
   const participant = await participantsCollection.findOne({ name: to });
 
-  const isItNotStatusMessage = type !== "status";
+  const isItNotPublicMessage = to !== "Todos";
 
-  if (isItNotStatusMessage && !participant) {
+  if (isItNotPublicMessage && !participant) {
     return false;
   }
 
@@ -20,8 +20,8 @@ async function saveNew({ from, text, type = "status", to = "Todos" }) {
   const message = {
     text,
     from,
-    type: type,
-    to: to,
+    type,
+    to,
     time: timestamp,
   };
 
@@ -48,7 +48,7 @@ async function get(userName, limit) {
     .toArray();
 
   await getDbAgent().closeConnection();
-  return messages;
+  return messages.reverse();
 }
 
 export { saveNew, get };

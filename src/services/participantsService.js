@@ -79,17 +79,15 @@ async function removeOfflineOnes() {
       .toArray();
 
     for (const { name } of offlineUsers) {
-      await getDbAgent().openConnection();
-
       await participantsCollection.deleteOne({ name });
 
       await messagesService.saveNew({
         from: name,
         text: "sai da sala...",
       });
-
-      getDbAgent().closeConnection();
     }
+
+    getDbAgent().closeConnection();
   } catch (e) {
     console.log(e);
   }
